@@ -1585,7 +1585,31 @@ rb_mod_ancestors(VALUE mod)
         refined_class = rb_refinement_module_get_refined_class(mod);
     }
 
+    VALUE receiver, pclass;
+    struct RClass *_rclass, *_classrclass;
+    rb_classext_t *_classext, *_classclassext;
+
+    printf("=====\n");
+    receiver = rb_obj_as_string(rb_inspect(mod));
+    printf("receiver: %s\n\n", rb_string_value_cstr(&receiver));
+
     for (p = mod; p; p = RCLASS_SUPER(p)) {
+
+        _rclass = RCLASS(p);
+        _classext = RCLASS_EXT(p);
+        _classrclass = RCLASS(rb_class_of(p));
+        _classclassext = RCLASS_EXT(rb_class_of(p));
+
+        printf("p: %lu\n", p);
+        printf("typeof p: %x\n", rb_type(p));
+        pclass = rb_obj_as_string(rb_inspect(rb_class_of(p)));
+        printf("classof p: %s\n", rb_string_value_cstr(&pclass));
+        // printf("\tclass m_tbl: %p (%lu)\n", RCLASS_M_TBL(rb_class_of(p)), rb_id_table_size(RCLASS_M_TBL(rb_class_of(p))));
+        printf("origin_: %lu\n", RCLASS_ORIGIN(p));
+        printf("m_tbl: %p (%lu)\n", RCLASS_M_TBL(p), rb_id_table_size(RCLASS_M_TBL(p)));
+        printf("const_tbl: %p (%lu)\n", RCLASS_CONST_TBL(p), RCLASS_CONST_TBL(p) ? rb_id_table_size(RCLASS_CONST_TBL(p)) : 0);
+        printf("\n");
+
         if (p == refined_class) break;
         if (p != RCLASS_ORIGIN(p)) continue;
         if (BUILTIN_TYPE(p) == T_ICLASS) {
